@@ -1,6 +1,6 @@
 # GeneAbacus Python
 
-This repository provides Python code for [GeneAbacus](https://github.com/vejnar/geneabacus). Using the `profileio` module, you can import profiles exported from GeneAbacus using the *binary* format. Profiles are loaded into [Numpy](https://numpy.org) arrays, usable for analysis.
+This repository provides Python code for [GeneAbacus](https://github.com/vejnar/GeneAbacus). Using the `profileio` module, you can import profiles exported from GeneAbacus using the *binary* format. Profiles are loaded into [Numpy](https://numpy.org) arrays, usable for analysis.
 
 From high-throughput sequencing **mapped reads** ([SAM/BAM](https://samtools.github.io/hts-specs/)), **GeneAbacus**:
 * Creates **profiles** representing coverage depth per nucleotide,

@@ -24,7 +24,6 @@ def parse_feat_line(line):
 
 def pfopen(filename, path_features=None, fon_name='transcript_stable_id', fon_coords='exons', features=[], rw=False):
     assert os.path.exists(filename), f'{filename} not found'
-    assert os.path.exists(path_features), f'{path_features} not found'
     # Open file
     if filename.endswith('.bin'):
         f = open(filename, 'rb')
@@ -33,13 +32,17 @@ def pfopen(filename, path_features=None, fon_name='transcript_stable_id', fon_co
     else:
         raise ValueError('Invalid format')
     # Open feature file
-    if path_features.endswith('.fon1.json'):
-        features = [[ft[fon_name], get_flength(ft[fon_coords])] for ft in json.load(open(path_features, 'rt'))['features']]
-    elif path_features.endswith('.tab'):
-        with open(path_features, 'rt') as ftab:
-            features = [parse_feat_line(l) for l in ftab]
-    else:
-        raise ValueError(f'Unknown format: {path_features}')
+    if path_features is not None:
+        assert os.path.exists(path_features), f'{path_features} not found'
+        if path_features.endswith('.fon1.json'):
+            features = [[ft[fon_name], get_flength(ft[fon_coords])] for ft in json.load(open(path_features, 'rt'))['features']]
+        elif path_features.endswith('.tab'):
+            with open(path_features, 'rt') as ftab:
+                features = [parse_feat_line(l) for l in ftab]
+        else:
+            raise ValueError(f'Unknown format: {path_features}')
+    elif len(features) == 0:
+        raise ValueError('No input features')
     # Read version
     detected_version = np.frombuffer(f.read(1), dtype='uint8')[0]
     assert detected_version in [3], f'Unknown version: {detected_version}'

@@ -14,6 +14,7 @@ import zlib
 
 import lz4.frame
 import numpy as np
+import zstandard as zstd
 
 def get_flength(features):
     return sum([e-s for s, e in features])
@@ -34,8 +35,9 @@ def pfopen(filename, path_features=None, fon_name='transcript_stable_id', fon_co
     # Open feature file
     if path_features is not None:
         assert os.path.exists(path_features), f'{path_features} not found'
-        if path_features.endswith('.fon1.json'):
-            features = [[ft[fon_name], get_flength(ft[fon_coords])] for ft in json.load(open(path_features, 'rt'))['features']]
+        if path_features.endswith('.fon1.json') or path_features.endswith('.fon1.json.zst'):
+            with zstd.open(path_features, 'rt') if path_features.endswith('.zst') else open(path_features, 'rt') as fp:
+                features = [[ft[fon_name], get_flength(ft[fon_coords])] for ft in json.load(fp)['features']]
         elif path_features.endswith('.tab'):
             with open(path_features, 'rt') as ftab:
                 features = [parse_feat_line(l) for l in ftab]
@@ -73,8 +75,9 @@ def pfwrite(profiles, filename, path_features=None, fon_name='transcript_stable_
     # Open feature
     if path_features is not None:
         assert os.path.exists(path_features), f'{path_features} not found'
-        if path_features.endswith('.fon1.json'):
-            features = [[ft[fon_name], get_flength(ft[fon_coords])] for ft in json.load(open(path_features, 'rt'))['features']]
+        if path_features.endswith('.fon1.json') or path_features.endswith('.fon1.json.zst'):
+            with zstd.open(path_features, 'rt') if path_features.endswith('.zst') else open(path_features, 'rt') as fp:
+                features = [[ft[fon_name], get_flength(ft[fon_coords])] for ft in json.load(fp)['features']]
         elif path_features.endswith('.tab'):
             with open(path_features, 'rt') as ftab:
                 features = [parse_feat_line(l) for l in ftab]
